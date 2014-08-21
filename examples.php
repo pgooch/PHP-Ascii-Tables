@@ -1,5 +1,6 @@
 <?php
-require_once('../ascii_table.php');
+require_once('./ascii_table.php');
+$ascii_table = new ascii_table();
 // Colors Example Data
 $svg_colors = array(
    array(
@@ -106,9 +107,19 @@ $svg_colors = array(
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <title>PHP ASCII-Table - Colors Example</title>
+        <title>PHP ASCII-Table Examples</title>
     </head>
     <body>
-       <pre><?php new ascii_table($svg_colors,'Colors in Various Formats') ?></pre>
+        <pre>
+<?php 
+$table = $ascii_table->make_table($svg_colors,'Colors in Various Formats',true);
+echo $table; ?>
+
+The color names and hex values, scraped from the "Colors in Various Formats" table above.
+<?php print_r($ascii_table->scrape_table($table,'color','HEX')); ?>
+
+All of the zip codes in Seattle, broken from the example.txt file.
+<?php print_r($ascii_table->break_table('./example.txt')); ?>
+        </pre>
    </body>
 </html>
