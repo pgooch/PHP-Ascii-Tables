@@ -1,0 +1,19 @@
+{
+    "name": "pgooch/PHP-Ascii-Tables",
+    "type": "library",
+    "description": "Convert multi-dimensional arrays into ASCII Tabled, and vise-versa.",
+    "keywords": ["cli","ascii","tables"],
+    "homepage": "https://github.com/pgooch/PHP-Ascii-Tables",
+    "license": "GPLv3",
+    "authors": [
+        {
+            "name": "Phillip Gooch",
+            "email": "phillip.gooch@gmail.com",
+            "homepage": "http://phillipgooch.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.X"
+    },
+}
