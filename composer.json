@@ -1,5 +1,5 @@
 {
-    "name": "pgooch/PHP-Ascii-Tables",
+    "name": "pgooch/php-ascii-tables",
     "type": "library",
     "description": "Convert multi-dimensional arrays into ASCII Tabled, and vise-versa.",
     "keywords": ["cli","ascii","tables"],
