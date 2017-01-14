@@ -108,7 +108,7 @@ class ascii_table{
         }
 
         // First thing we want to do is break it apart at the lines
-        $table = explode("\n",trim($table));
+        $table = explode(PHP_EOL,trim($table));
 
         // Check if the very first character of the very first row is a +, if not delete that row, it must be a title.
         if(substr($table[0],0,1)!='+'){
@@ -248,7 +248,7 @@ class ascii_table{
         $left_padding = floor(($this->table_width-$this->len($title))/2);
 
         // return exactly what is needed
-        return str_repeat(' ',$left_padding).$title."\n";
+        return str_repeat(' ',$left_padding).$title.PHP_EOL;
     }
 
     /*
@@ -265,7 +265,7 @@ class ascii_table{
         }
 
         // return it
-        return $divider."\n";
+        return $divider.PHP_EOL;
 
     }
 
@@ -294,7 +294,7 @@ class ascii_table{
         }
 
         // Return the row
-        return $row."\n";
+        return $row.PHP_EOL;
 
     }
 
@@ -331,7 +331,7 @@ class ascii_table{
             }
 
             // Add the row divider
-            $rows .= "\n";
+            $rows .= PHP_EOL;
 
         }
 
