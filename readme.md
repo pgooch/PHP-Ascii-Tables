@@ -25,13 +25,3 @@ Examples of the classes functionality can be found in examples.php, and a text o
 	| Indigo | #4B0082 | 75  | 0     | 130  | 275 | 100        | 25        | 42   | 100     | 0      | 49  |
 	| Violet | #EE82EE | 238 | 130   | 238  | 300 | 76         | 72        | 0    | 45      | 0      | 7   |
 	+--------+---------+-----+-------+------+-----+------------+-----------+------+---------+--------+-----+
-
-
-### Version History
-##### 1.1.0
-- Added break_table function
-- Added scrape_table function
-- Added ability to return or save generated table to files.
-
-##### 1.0.0
-- Initial Release

@@ -86,7 +86,7 @@ class ascii_table{
 
         Returns a lenght of string using mb_strlen or strlen
     */
-    function len($col_value){
+    static function len($col_value){
 
         return extension_loaded('mbstring') ? mb_strlen($col_value) : strlen($col_value);
 
@@ -214,10 +214,27 @@ class ascii_table{
         foreach(array_keys($array[0]) as $col){
 
             // Get the longest col value and compare with the col name to get the longest
-            $this->col_widths[$col] = max(max(array_map([$this, 'len'], array_column($array, $col))), $this->len($col));
+            $this->col_widths[$col] = max(max(array_map(array($this,'len'), $this->arr_col($array, $col))), $this->len($col));
 
         }
 
+    }
+
+    /*
+        This is an array_column shim, it will use the PHP array_column function if there is one, otherwise it will do the same thing the old way.
+    */
+    function arr_col($array,$col){
+        if(is_callable('array_column')){
+            return array_column($array,$col);
+        }else{
+            $return = array();
+            foreach($array as $n => $dat){
+                if(isset($dat[$col])){
+                    $return[] = $dat[$col];
+                }
+            }
+            return $return;
+        }
     }
 
     /*
