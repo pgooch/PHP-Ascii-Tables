@@ -30,8 +30,10 @@ class ascii_table{
     */
     function make_table($array,$title='',$return=false){
 
-        // First things first lets get a variable ready to put the table into
+        // First things first lets get the variable ready
         $table = '';
+        $this->col_widths = array();
+        $this->table_width = 0;
 
         // Now we need to get some details prepared.
         $this->get_col_widths($array);
@@ -42,20 +44,25 @@ class ascii_table{
             $table .= $this->make_title($title);
         }
 
-        // Now we can output the header row, along with the divider rows around it
-        $table .= $this->make_divider();
+        // If we have a blank array then we don't need to output anything else
+        if(isset($array[0])){
 
-        // Output the header row
-        $table .= $this->make_headers();
+            // Now we can output the header row, along with the divider rows around it
+            $table .= $this->make_divider();
 
-        // Another divider line
-        $table .= $this->make_divider();
+            // Output the header row
+            $table .= $this->make_headers();
 
-        // Add the table data in
-        $table .= $this->make_rows($array);
+            // Another divider line
+            $table .= $this->make_divider();
 
-        // The final divider line.
-        $table .= $this->make_divider();
+            // Add the table data in
+            $table .= $this->make_rows($array);
+
+            // The final divider line.
+            $table .= $this->make_divider();
+
+        }
 
         // Now handle however you want this returned
         // First if it's a string were saving
@@ -210,12 +217,15 @@ class ascii_table{
     */
     function get_col_widths($array){
 
-        // Loop through each row, then through each cell
-        foreach(array_keys($array[0]) as $col){
 
-            // Get the longest col value and compare with the col name to get the longest
-            $this->col_widths[$col] = max(max(array_map(array($this,'len'), $this->arr_col($array, $col))), $this->len($col));
+        // If we have some array data loop through each row, then through each cell
+        if(isset($array[0])){
+            foreach(array_keys($array[0]) as $col){
 
+                // Get the longest col value and compare with the col name to get the longest
+                $this->col_widths[$col] = max(max(array_map(array($this,'len'), $this->arr_col($array, $col))), $this->len($col));
+
+            }
         }
 
     }
@@ -265,7 +275,7 @@ class ascii_table{
         $left_padding = floor(($this->table_width-$this->len($title))/2);
 
         // return exactly what is needed
-        return str_repeat(' ',$left_padding).$title.PHP_EOL;
+        return str_repeat(' ',max($left_padding,0)).$title.PHP_EOL;
     }
 
     /*

@@ -120,6 +120,9 @@ The color names and hex values, scraped from the "Colors in Various Formats" tab
 
 All of the zip codes in Seattle, broken from the example.txt file.
 <?php print_r($ascii_table->break_table('./example.txt')); ?>
+
+What happens when you try and pass an empty array to the make_table function.
+<?php $ascii_table->make_table(array(),'Blank Test'); ?>
         </pre>
    </body>
 </html>
