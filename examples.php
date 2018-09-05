@@ -101,7 +101,29 @@ $svg_colors = array(
         'Yellow' => '0',
         'Key' => '7',
     ),
-)
+);
+$multiline_test_data = array(
+    array(
+        'id' => 1,
+        'multiline' => "This cell \n is exactly \n 3 lines.",
+        'ellipse' => '...'
+    ),
+    array(
+        'id' => 2,
+        'multiline' => "This cell is only \n 2 lines",
+        'ellipse' => '...'
+    ),
+    array(
+        'id' => 3,
+        'multiline' => "Just a single line",
+        'ellipse' => '...'
+    ),
+    array(
+        'id' => 4,
+        'multiline' => "Also a single line",
+        'ellipse' => ".\n.\n."
+    ),
+);
 ?>
 <!DOCTYPE html>
     <head>
@@ -111,6 +133,8 @@ $svg_colors = array(
     </head>
     <body>
         <pre>
+<?php $ascii_table->make_table($multiline_test_data,'Multi-line Cells') ?>
+
 <?php 
 $table = $ascii_table->make_table($svg_colors,'Colors in Various Formats',true);
 echo $table; ?>

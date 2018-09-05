@@ -35,6 +35,33 @@ class ascii_table{
         $this->col_widths = array();
         $this->table_width = 0;
 
+        // Modify the table to support any line breaks that might exist
+        $modified_array = array();
+        foreach($array as $row => $row_data){
+            // This will break the cells up on line breaks and store them in $raw_array with the longest value for that column in $longest_cell
+            $row_array = array();
+            $longest_cell = 1;
+            foreach($row_data as $cell => $cell_value){
+                $cell_value = explode("\n",$cell_value);
+                $row_array[$cell] = $cell_value;
+                $longest_cell = max($longest_cell,count($cell_value));
+            }
+            // This will loop as many times as the longest, if there is a value it will use that, if not it will just give it an empty string
+            for($i=0;$i<$longest_cell;$i++){
+                $new_row_temp = array();
+                foreach($row_array as $col => $col_data){
+                    if($col_data[$i]!=undefined){
+                        $new_row_temp[$col] = trim($col_data[$i]);
+                    }else{
+                        $new_row_temp[$col] = '';
+                    }
+                }
+                $modified_array[] = $new_row_temp;
+            }
+        }
+        // Finally we can call the fully modified array the array for future use
+        $array = $modified_array;
+
         // Now we need to get some details prepared.
         $this->get_col_widths($array);
 
