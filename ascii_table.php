@@ -15,6 +15,7 @@ class ascii_table{
         $error 			- The error reported by file_put_contents or file_get_contents when it fails a save or load attempt.
     */
     private $col_widths = array();
+    private $col_types = array();
     private $table_width = 0;
     public  $error = '';
 
@@ -27,12 +28,14 @@ class ascii_table{
             True 	- The script will return the table as a string. (Required)
             False 	- The script will echo the table out, nothing will be returned.
             String 	- It will attempt to save the table to a file with the strings name, Returning true/false of success or fail.
+        $autoalign_cells 	- If TRUE all column names and values with numeric data types will be aligned to the right of the cell.
     */
-    function make_table($array,$title='',$return=false){
+    function make_table($array,$title='',$return=false,$autoalign_cells=false){
 
         // First things first lets get the variable ready
         $table = '';
         $this->col_widths = array();
+        $this->col_types = array();
         $this->table_width = 0;
 
         // Modify the table to support any line breaks that might exist
@@ -64,6 +67,7 @@ class ascii_table{
 
         // Now we need to get some details prepared.
         $this->get_col_widths($array);
+        $this->get_col_types($array);
 
         // If there is going to be a title we are also going to need to determine the total width of the table, otherwise we don't need it
         if($title!=''){
@@ -78,13 +82,13 @@ class ascii_table{
             $table .= $this->make_divider();
 
             // Output the header row
-            $table .= $this->make_headers();
+            $table .= $this->make_headers($autoalign_cells);
 
             // Another divider line
             $table .= $this->make_divider();
 
             // Add the table data in
-            $table .= $this->make_rows($array);
+            $table .= $this->make_rows($array, $autoalign_cells);
 
             // The final divider line.
             $table .= $this->make_divider();
@@ -258,6 +262,32 @@ class ascii_table{
     }
 
     /*
+        This class will set the $col_types variable with the type of value in each column
+
+        $array 	- The multi-dimensional array you are building the ASCII Table from
+    */
+    function get_col_types($array){
+
+        // If we have some array data loop through each row, then through each cell
+        if(isset($array[0])){
+            // Parse each col and each row to get the column type
+            foreach(array_keys($array[0]) as $col){
+                foreach ($array as $i => $row) {
+                    if (trim($row[$col]) != '') {
+                        if (!isset($this->col_types[$col])) {
+                            $this->col_types[$col] = is_numeric($row[$col]) ? 'numeric' : 'string';
+                        } else {
+                            if ($this->col_types[$col] == 'numeric') {
+                                $this->col_types[$col] = is_numeric($row[$col]) ? 'numeric' : 'string';
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /*
         This is an array_column shim, it will use the PHP array_column function if there is one, otherwise it will do the same thing the old way.
     */
     function arr_col($array,$col){
@@ -326,7 +356,7 @@ class ascii_table{
     /*
         This will look through the $col_widths array and make a column header for each one
     */
-    function make_headers(){
+    function make_headers($autoalign_cells){
 
         // This time were going to start with a simple bar;
         $row = '|';
@@ -335,12 +365,8 @@ class ascii_table{
         foreach($this->col_widths as $col => $length){
 
             // Add title
-            $row .= ' '.$col.' ';
-
-            // Check and see if we need additional padding, if so go ahead and add it
-            if($this->len($col)<$length){
-                $row .= str_repeat(' ',$length-$this->len($col));
-            }
+            $alignment = $autoalign_cells && isset($this->col_types[$col]) && $this->col_types[$col] == 'numeric' ? STR_PAD_LEFT : STR_PAD_RIGHT;
+            $row .= ' ' . str_pad($col, $this->col_widths[$col], ' ', $alignment) . ' ';
 
             // Add the right hand bar
             $row .= '|';
@@ -357,7 +383,7 @@ class ascii_table{
 
         $array 	- The multi-dimensional array you are building the ASCII Table from
     */
-    function make_rows($array){
+    function make_rows($array, $autoalign_cells){
 
         // Just prep the variable
         $rows = '';
@@ -372,12 +398,8 @@ class ascii_table{
             foreach($data as $col => $value){
 
                 // Add the value to the table
-                $rows .= ' '.$value.' ';
-
-                // check and see if that value needs any padding, if so add it
-                if($this->len($value)<$this->col_widths[$col]){
-                    $rows .= str_repeat(' ', $this->col_widths[$col]-$this->len($value));
-                }
+                $alignment = $autoalign_cells && isset($this->col_types[$col]) && $this->col_types[$col] == 'numeric' ? STR_PAD_LEFT : STR_PAD_RIGHT;
+                $rows .= ' ' . str_pad($value, $this->col_widths[$col], ' ', $alignment) . ' ';
 
                 // Add the right hand bar
                 $rows .= '|';
