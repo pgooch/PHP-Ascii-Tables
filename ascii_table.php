@@ -53,7 +53,7 @@ class ascii_table{
             for($i=0;$i<$longest_cell;$i++){
                 $new_row_temp = array();
                 foreach($row_array as $col => $col_data){
-                    if($col_data[$i]!=undefined){
+                    if(isset($col_data[$i])){
                         $new_row_temp[$col] = trim($col_data[$i]);
                     }else{
                         $new_row_temp[$col] = '';
