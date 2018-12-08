@@ -2,14 +2,15 @@
 /**
  * PHP ASCII Tables
  *
- * This class will convert multi-dimensional arrays into ASCII Tabled, and vice-versa.
+ * This class will convert multi-dimensional arrays into ASCII Tables, and vice-versa.
  *
  * @package   PHP-Ascii-Tables
  * @author    Phillip Gooch <phillip.gooch@gmail.com>
  * @copyright 2018 Phillip Gooch
  * @link      https://github.com/pgooch/PHP-Ascii-Tables
  */
-class ascii_table{
+class Ascii_Table
+{
     /**
      * These are all the variables that the script uses to build out the table, none of them meant for user-modification.
      */
@@ -49,10 +50,10 @@ class ascii_table{
      *                        String - It will attempt to save the table to a file with the strings name, Returning true/false of success or fail.
      * @param boolean $autoalign_cells If True all column names and values with numeric data types will be aligned to the right of the cell.
      *
-     * @return string|void The ASCII table representation of $array.
+     * @return string|bool|void The ASCII table representation of $array.
      */
-    function make_table($array,$title='',$return=false,$autoalign_cells=false){
-
+    public function make_Table($array, $title = '', $return = false, $autoalign_cells = false)
+    {
         // First things first lets get the variable ready
         $table = '';
         $this->col_widths = array();
@@ -61,94 +62,83 @@ class ascii_table{
 
         // Modify the table to support any line breaks that might exist
         $modified_array = array();
-        foreach($array as $row => $row_data){
+        foreach ($array as $row => $row_data) {
             // This will break the cells up on line breaks and store them in $raw_array with the longest value for that column in $longest_cell
             $row_array = array();
             $longest_cell = 1;
-            foreach($row_data as $cell => $cell_value){
-                $cell_value = explode("\n",$cell_value);
+            foreach ($row_data as $cell => $cell_value) {
+                $cell_value = explode("\n", $cell_value);
                 $row_array[$cell] = $cell_value;
-                $longest_cell = max($longest_cell,count($cell_value));
+                $longest_cell = max($longest_cell, count($cell_value));
             }
+
             // This will loop as many times as the longest, if there is a value it will use that, if not it will just give it an empty string
-            for($i=0;$i<$longest_cell;$i++){
+            for ($i = 0; $i < $longest_cell; $i++) {
                 $new_row_temp = array();
-                foreach($row_array as $col => $col_data){
-                    if(isset($col_data[$i])){
+                foreach ($row_array as $col => $col_data) {
+                    if (isset($col_data[$i])) {
                         $new_row_temp[$col] = trim($col_data[$i]);
-                    }else{
+                    } else {
                         $new_row_temp[$col] = '';
                     }
                 }
                 $modified_array[] = $new_row_temp;
             }
         }
+
         // Finally we can call the fully modified array the array for future use
         $array = $modified_array;
 
         // Now we need to get some details prepared.
-        $this->get_col_widths($array);
-        $this->get_col_types($array);
+        $this->getColWidths($array);
+        $this->getColTypes($array);
 
         // If there is going to be a title we are also going to need to determine the total width of the table, otherwise we don't need it
-        if($title!=''){
-            $this->get_table_width();
-            $table .= $this->make_title($title);
+        if ($title != '') {
+            $this->getTableWidth();
+            $table .= $this->makeTitle($title);
         }
 
         // If we have a blank array then we don't need to output anything else
-        if(isset($array[0])){
-
+        if (isset($array[0])) {
             // Now we can output the header row, along with the divider rows around it
-            $table .= $this->make_divider();
+            $table .= $this->makeDivider();
 
             // Output the header row
-            $table .= $this->make_headers($autoalign_cells);
+            $table .= $this->makeHeaders($autoalign_cells);
 
             // Another divider line
-            $table .= $this->make_divider();
+            $table .= $this->makeDivider();
 
             // Add the table data in
-            $table .= $this->make_rows($array, $autoalign_cells);
+            $table .= $this->makeRows($array, $autoalign_cells);
 
             // The final divider line.
-            $table .= $this->make_divider();
-
+            $table .= $this->makeDivider();
         }
 
         // Now handle however you want this returned
         // First if it's a string were saving
-        if(is_string($return)){
-            $save = @file_put_contents($return,$table);
-            if($save){
+        if (is_string($return)) {
+            $save = @file_put_contents($return, $table);
+            if ($save) {
+
                 return true;
-            }else{
+            } else {
                 // Add the save_error if there was one
-                $this->error = 'Unable to save table to "'.$return.'".';
+                $this->error = 'Unable to save table to "' . $return . '".';
+
                 return false;
             }
-        }else{
+        } else {
             // the bool returns are very simple.
-            if($return){
+            if ($return) {
+
                 return $table;
-            }else{
+            } else {
                 echo $table;
             }
         }
-
-    }
-
-    /**
-     * This function will use the mb_strlen if available or strlen.
-     *
-     * @param string $col_value The string that be need to be counted.
-     *
-     * @return int Returns a lenght of string using mb_strlen or strlen.
-     */
-    static function len($col_value){
-
-        return extension_loaded('mbstring') ? mb_strlen($col_value) : strlen($col_value);
-
     }
 
     /**
@@ -158,19 +148,19 @@ class ascii_table{
      *
      * @return array Return a multi-dimensional array similar to the one that you would have given it `make_table()` to create it.
      */
-    function break_table($table){
-
+    public function break_Table($table)
+    {
         // Try and load the file, if it fails then just return false and set an error message
         $load_file = @file_get_contents($table);
-        if($load_file!==false){
+        if ($load_file !== false) {
             $table = $load_file;
         }
 
         // First thing we want to do is break it apart at the lines
-        $table = explode(PHP_EOL,trim($table));
+        $table = explode(PHP_EOL, trim($table));
 
         // Check if the very first character of the very first row is a +, if not delete that row, it must be a title.
-        if(substr($table[0],0,1)!='+'){
+        if (substr($table[0], 0, 1) != '+') {
             unset($table[0]);
             $table = array_values($table);
         }
@@ -180,38 +170,30 @@ class ascii_table{
         $array_columns = array();
 
         // Now we want to grab row [1] and get the column names from it.
-        $columns = explode('|',$table[1]);
+        $columns = explode('|', $table[1]);
 
-        foreach($columns as $n => $value){
-
+        foreach ($columns as $n => $value) {
             // The first and last columns are blank, so lets skip them
-            if($n>0 && $n<count($columns)-1){
-
+            if ($n > 0 && $n < count($columns) - 1) {
                 // If we have a value after trimming the whitespace then use it, otherwise just give the column it's number as it's name
-                if(trim($value)!=''){
+                if (trim($value) != '') {
                     $array_columns[$n] = trim($value);
-                }else{
+                } else {
                     $array_columns[$n] = $n;
                 }
-
             }
-
         }
 
         // And now we can go through the bulk of the table data
-        for($row=3;$row<count($table)-1;$row++){
-
+        for ($row = 3; $row < count($table) - 1; $row++) {
             // Break the row apart on the pipe as well
-            $row_items = explode('|',$table[$row]);
+            $row_items = explode('|', $table[$row]);
 
             // Loop through all the array columns and grab the appropriate value, placing it all in the $array variable.
-            foreach($array_columns as $pos => $column){
-
+            foreach ($array_columns as $pos => $column) {
                 // Add the details into the main $array table, remembering to trim them of that extra whitespace
                 $array[$row][$column] = trim($row_items[$pos]);
-
             }
-
         }
 
         // Reflow the array so that it starts at the logical 0 point
@@ -219,7 +201,6 @@ class ascii_table{
 
         // Return the array
         return $array;
-
     }
 
     /**
@@ -231,36 +212,44 @@ class ascii_table{
      *
      * @return array Return they key/value pairs requested.
      */
-    function scrape_table($table,$key,$value=null){
-
+    public function scrape_Table($table, $key, $value = null)
+    {
         // First things first wets parse the entire table out.
-        $table = $this->break_table($table);
+        $table = $this->break_Table($table);
 
         // Set up a variable to store the return in while processing
         $array = array();
 
         // Now we loop through the table
-        foreach($table as $row => $data){
-
+        foreach ($table as $row => $data) {
             // If value is null then set it to key and key to row.
-            if($value==null){
+            if ($value == null) {
                 $grabbed_value = $data[$key];
                 $grabbed_key = $row;
-
                 // Else just grab the desired key/value values
-            }else{
+            } else {
                 $grabbed_key = $data[$key];
                 $grabbed_value = $data[$value];
             }
 
             // Place the information into the array().
             $array[$grabbed_key] = $grabbed_value;
-
         }
 
         // Finally return the new array
         return $array;
+    }
 
+    /**
+     * This function will use the mb_strlen if available or strlen.
+     *
+     * @param string $col_value The string that be need to be counted.
+     *
+     * @return int Returns a lenght of string using mb_strlen or strlen.
+     */
+    private static function len($col_value)
+    {
+        return extension_loaded('mbstring') ? mb_strlen($col_value) : strlen($col_value);
     }
 
     /**
@@ -270,19 +259,15 @@ class ascii_table{
      *
      * @return void
      */
-    function get_col_widths($array){
-
-
+    private function getColWidths($array)
+    {
         // If we have some array data loop through each row, then through each cell
-        if(isset($array[0])){
-            foreach(array_keys($array[0]) as $col){
-
+        if (isset($array[0])) {
+            foreach (array_keys($array[0]) as $col) {
                 // Get the longest col value and compare with the col name to get the longest
-                $this->col_widths[$col] = max(max(array_map(array($this,'len'), $this->arr_col($array, $col))), $this->len($col));
-
+                $this->col_widths[$col] = max(max(array_map(array($this, 'len'), $this->arrCol($array, $col))), $this->len($col));
             }
         }
-
     }
 
     /**
@@ -292,12 +277,12 @@ class ascii_table{
      *
      * @return void
      */
-    function get_col_types($array){
-
+    private function getColTypes($array)
+    {
         // If we have some array data loop through each row, then through each cell
-        if(isset($array[0])){
+        if (isset($array[0])) {
             // Parse each col and each row to get the column type
-            foreach(array_keys($array[0]) as $col){
+            foreach (array_keys($array[0]) as $col) {
                 foreach ($array as $i => $row) {
                     if (trim($row[$col]) != '') {
                         if (!isset($this->col_types[$col])) {
@@ -321,18 +306,20 @@ class ascii_table{
      *
      * @return array An array containing all values of a column.
      */
-    function arr_col($array,$col){
-        if(is_callable('array_column')){
-            return array_column($array,$col);
-        }else{
+    private function arrCol($array, $col)
+    {
+        if (is_callable('array_column')) {
+            $return = array_column($array, $col);
+        } else {
             $return = array();
-            foreach($array as $n => $dat){
-                if(isset($dat[$col])){
+            foreach ($array as $n => $dat) {
+                if (isset($dat[$col])) {
                     $return[] = $dat[$col];
                 }
             }
-            return $return;
         }
+
+        return $return;
     }
 
     /**
@@ -340,36 +327,35 @@ class ascii_table{
      *
      * @return void
      */
-    function get_table_width(){
-
+    private function getTableWidth()
+    {
         // Add up all the columns
         $this->table_width = array_sum($this->col_widths);
 
         // Add in the spacers between the columns (one on each side of the value)
-        $this->table_width += count($this->col_widths)*2;
+        $this->table_width += count($this->col_widths) * 2;
 
         // Add in the dividers between columns, as well as the ones for the outside of the table
-        $this->table_width += count($this->col_widths)+1;
-
+        $this->table_width += count($this->col_widths) + 1;
     }
 
     /**
-     * This will return the centered title (only called if a title is passed)
+     * This will return the centered title (only called if a title is passed).
      *
-     * @param string $title The table's title
+     * @param string $title The table's title.
      *
-     * @return string The centered title
+     * @return string The centered title.
      */
-    function make_title($title){
-
+    private function makeTitle($title)
+    {
         // First we want to remove any extra whitespace for a proper centering
         $title = trim($title);
 
         // Determine the padding needed on the left side of the title
-        $left_padding = floor(($this->table_width-$this->len($title))/2);
+        $left_padding = floor(($this->table_width - $this->len($title)) / 2);
 
         // return exactly what is needed
-        return str_repeat(' ',max($left_padding,0)).$title.PHP_EOL;
+        return str_repeat(' ', max($left_padding, 0)) . $title . PHP_EOL;
     }
 
     /**
@@ -377,19 +363,18 @@ class ascii_table{
      *
      * @return string A table's divider.
      */
-    function make_divider(){
-
+    private function makeDivider()
+    {
         // were going to start with a simple union piece
         $divider = '+';
 
         // Loop through the table, adding lines of the appropriate length (remembering the +2 for the spacers), and a union piece at the end
-        foreach($this->col_widths as $col => $length){
-            $divider .= str_repeat('-',$length+2).'+';
+        foreach ($this->col_widths as $col => $length) {
+            $divider .= str_repeat('-', $length + 2) . '+';
         }
 
         // return it
-        return $divider.PHP_EOL;
-
+        return $divider . PHP_EOL;
     }
 
     /**
@@ -399,26 +384,23 @@ class ascii_table{
      *
      * @return string The row of the table header.
      */
-    function make_headers($autoalign_cells){
-
+    private function makeHeaders($autoalign_cells)
+    {
         // This time were going to start with a simple bar;
         $row = '|';
 
         // Loop though the col widths, adding the cleaned title and needed padding
-        foreach($this->col_widths as $col => $length){
-
+        foreach ($this->col_widths as $col => $length) {
             // Add title
             $alignment = $autoalign_cells && isset($this->col_types[$col]) && $this->col_types[$col] == 'numeric' ? STR_PAD_LEFT : STR_PAD_RIGHT;
             $row .= ' ' . str_pad($col, $this->col_widths[$col], ' ', $alignment) . ' ';
 
             // Add the right hand bar
             $row .= '|';
-
         }
 
         // Return the row
-        return $row.PHP_EOL;
-
+        return $row . PHP_EOL;
     }
 
     /**
@@ -427,39 +409,33 @@ class ascii_table{
      * @param array $array The multi-dimensional array you are building the ASCII Table from.
      * @param bool $autoalign_cells If True, column values with numeric data types will be aligned to the right of the cell.
      *
-     * @return string A table's row.
+     * @return string The rows of the table.
      */
-    function make_rows($array, $autoalign_cells){
-
+    private function makeRows($array, $autoalign_cells)
+    {
         // Just prep the variable
         $rows = '';
 
         // Loop through rows
-        foreach($array as $n => $data){
-
+        foreach ($array as $n => $data) {
             // Again were going to start with a simple bar
             $rows .= '|';
 
             // Loop through the columns
-            foreach($data as $col => $value){
-
+            foreach ($data as $col => $value) {
                 // Add the value to the table
                 $alignment = $autoalign_cells && isset($this->col_types[$col]) && $this->col_types[$col] == 'numeric' ? STR_PAD_LEFT : STR_PAD_RIGHT;
                 $rows .= ' ' . str_pad($value, $this->col_widths[$col], ' ', $alignment) . ' ';
 
                 // Add the right hand bar
                 $rows .= '|';
-
             }
 
             // Add the row divider
             $rows .= PHP_EOL;
-
         }
 
         // Return the row
         return $rows;
-
     }
-
 }
