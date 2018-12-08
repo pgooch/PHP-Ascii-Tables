@@ -1,35 +1,56 @@
 <?php
-/*
-	PHP ASCII Tables
-
-	This class will convert multi-dimensional arrays into ASCII Tabled, and vise-versa.
-
-	By Phillip Gooch <phillip.gooch@gmail.com>
-*/
+/**
+ * PHP ASCII Tables
+ *
+ * This class will convert multi-dimensional arrays into ASCII Tabled, and vice-versa.
+ *
+ * @package   PHP-Ascii-Tables
+ * @author    Phillip Gooch <phillip.gooch@gmail.com>
+ * @copyright 2018 Phillip Gooch
+ * @link      https://github.com/pgooch/PHP-Ascii-Tables
+ */
 class ascii_table{
-    /*
-        These are all the variables that the script uses to build out the table, none of them meant for user-modification
+    /**
+     * These are all the variables that the script uses to build out the table, none of them meant for user-modification.
+     */
 
-        $col_widths 	- An array that contains the max character width of each column (not including buffer spacing)
-        $table_width 	- The complete width of the table, including spacing and bars
-        $error 			- The error reported by file_put_contents or file_get_contents when it fails a save or load attempt.
-    */
+    /**
+     * An array that contains the max character width of each column (not including buffer spacing).
+     * @access private
+     */
     private $col_widths = array();
+
+    /**
+     * An array that contains the column types.
+     * @access private
+     */
     private $col_types = array();
+
+    /**
+     * The complete width of the table, including spacing and bars.
+     * @access private
+     */
     private $table_width = 0;
-    public  $error = '';
 
-    /*
-        This is the function that you will call to make the table. You must pass it at least the first variable
+    /**
+     * The error reported by file_put_contents or file_get_contents when it fails a save or load attempt.
+     * @access public
+     */
+    public $error = '';
 
-        $array 	- A multi-dimensional array containing the data you want to build a table from.
-        $title 	- The title of the table that will be centered above it, if you do not want a title you can pass a blank
-        $return - The method of returning the data, this has 3 options.
-            True 	- The script will return the table as a string. (Required)
-            False 	- The script will echo the table out, nothing will be returned.
-            String 	- It will attempt to save the table to a file with the strings name, Returning true/false of success or fail.
-        $autoalign_cells 	- If TRUE all column names and values with numeric data types will be aligned to the right of the cell.
-    */
+    /**
+     * This is the function that you will call to make the table. You must pass it at least the first variable.
+     *
+     * @param array $array A multi-dimensional array containing the data you want to build a table from.
+     * @param string $title The title of the table that will be centered above it, if you do not want a title you can pass a blank.
+     * @param boolean $return The method of returning the data, this has 3 options.
+     *                        True - The script will return the table as a string. (Required).
+     *                        False - The script will echo the table out, nothing will be returned.
+     *                        String - It will attempt to save the table to a file with the strings name, Returning true/false of success or fail.
+     * @param boolean $autoalign_cells If True all column names and values with numeric data types will be aligned to the right of the cell.
+     *
+     * @return string|void The ASCII table representation of $array.
+     */
     function make_table($array,$title='',$return=false,$autoalign_cells=false){
 
         // First things first lets get the variable ready
@@ -117,26 +138,26 @@ class ascii_table{
 
     }
 
-    /*
-        This function will use the mb_strlen if available or strlen
-
-        $value - The string that be need to be counted
-
-        Returns a lenght of string using mb_strlen or strlen
-    */
+    /**
+     * This function will use the mb_strlen if available or strlen.
+     *
+     * @param string $col_value The string that be need to be counted.
+     *
+     * @return int Returns a lenght of string using mb_strlen or strlen.
+     */
     static function len($col_value){
 
         return extension_loaded('mbstring') ? mb_strlen($col_value) : strlen($col_value);
 
     }
 
-    /*
-        This function will load a saved ascii table and turn it back into a multi-dimensional table.
-
-        $table 	- A PHP ASCII Table either as a string or a text file
-
-        Returns a multi-dimensional array;
-    */
+    /**
+     * This function will load a saved ascii table and turn it back into a multi-dimensional table.
+     *
+     * @param string $table A PHP ASCII Table either as a string or a text file.
+     *
+     * @return array Return a multi-dimensional array similar to the one that you would have given it `make_table()` to create it.
+     */
     function break_table($table){
 
         // Try and load the file, if it fails then just return false and set an error message
@@ -201,14 +222,15 @@ class ascii_table{
 
     }
 
-    /*
-        This will take a table in either a file or a string and scrape out two columns of data from it. If you only pass a single column it will
-        return that in a straight numeric array.
-
-        $table - The table file or string
-        $key - They column to be used as the array key, if no value is passed, the value that will be placed in the numeric array.
-        $value - the column to be used as the array value, if null then key will be returned in numeric array.
-    */
+    /**
+     * This will take a table in either a file or a string and scrape out two columns of data from it. If you only pass a single column it will return that in a straight numeric array.
+     *
+     * @param string $table The table file or string.
+     * @param string $key They column to be used as the array key, if no value is passed, the value that will be placed in the numeric array.
+     * @param string $value The column to be used as the array value, if null then key will be returned in numeric array.
+     *
+     * @return array Return they key/value pairs requested.
+     */
     function scrape_table($table,$key,$value=null){
 
         // First things first wets parse the entire table out.
@@ -241,11 +263,13 @@ class ascii_table{
 
     }
 
-    /*
-        This class will set the $col_width variable with the longest value in each column
-
-        $array 	- The multi-dimensional array you are building the ASCII Table from
-    */
+    /**
+     * This method will set the $col_width variable with the longest value in each column.
+     *
+     * @param array $array The multi-dimensional array you are building the ASCII Table from.
+     *
+     * @return void
+     */
     function get_col_widths($array){
 
 
@@ -261,11 +285,13 @@ class ascii_table{
 
     }
 
-    /*
-        This class will set the $col_types variable with the type of value in each column
-
-        $array 	- The multi-dimensional array you are building the ASCII Table from
-    */
+    /**
+     * This method will set the $col_types variable with the type of value in each column.
+     *
+     * @param array $array The multi-dimensional array you are building the ASCII Table from.
+     *
+     * @return void
+     */
     function get_col_types($array){
 
         // If we have some array data loop through each row, then through each cell
@@ -287,9 +313,14 @@ class ascii_table{
         }
     }
 
-    /*
-        This is an array_column shim, it will use the PHP array_column function if there is one, otherwise it will do the same thing the old way.
-    */
+    /**
+     * This is an array_column shim, it will use the PHP array_column function if there is one, otherwise it will do the same thing the old way.
+     *
+     * @param array $array The multi-dimensional array you are building the ASCII Table from.
+     * @param string $col A table's key (column).
+     *
+     * @return array An array containing all values of a column.
+     */
     function arr_col($array,$col){
         if(is_callable('array_column')){
             return array_column($array,$col);
@@ -304,9 +335,11 @@ class ascii_table{
         }
     }
 
-    /*
-        This will get the entire width of the table and set $table_width accordingly. This value is used when building.
-    */
+    /**
+     * This will get the entire width of the table and set $table_width accordingly. This value is used when building.
+     *
+     * @return void
+     */
     function get_table_width(){
 
         // Add up all the columns
@@ -320,9 +353,13 @@ class ascii_table{
 
     }
 
-    /*
-        This will return the centered title (only called if a title is passed)
-    */
+    /**
+     * This will return the centered title (only called if a title is passed)
+     *
+     * @param string $title The table's title
+     *
+     * @return string The centered title
+     */
     function make_title($title){
 
         // First we want to remove any extra whitespace for a proper centering
@@ -335,9 +372,11 @@ class ascii_table{
         return str_repeat(' ',max($left_padding,0)).$title.PHP_EOL;
     }
 
-    /*
-        This will use the data in the $col_width var to make a divider line.
-    */
+    /**
+     * This will use the data in the $col_width var to make a divider line.
+     *
+     * @return string A table's divider.
+     */
     function make_divider(){
 
         // were going to start with a simple union piece
@@ -353,9 +392,13 @@ class ascii_table{
 
     }
 
-    /*
-        This will look through the $col_widths array and make a column header for each one
-    */
+    /**
+     * This will look through the $col_widths array and make a column header for each one.
+     *
+     * @param bool $autoalign_cells If True, columns with numeric data types will be aligned to the right of the cell.
+     *
+     * @return string The row of the table header.
+     */
     function make_headers($autoalign_cells){
 
         // This time were going to start with a simple bar;
@@ -378,11 +421,14 @@ class ascii_table{
 
     }
 
-    /*
-        This makes the actual table rows
-
-        $array 	- The multi-dimensional array you are building the ASCII Table from
-    */
+    /**
+     * This makes the actual table rows.
+     *
+     * @param array $array The multi-dimensional array you are building the ASCII Table from.
+     * @param bool $autoalign_cells If True, column values with numeric data types will be aligned to the right of the cell.
+     *
+     * @return string A table's row.
+     */
     function make_rows($array, $autoalign_cells){
 
         // Just prep the variable
