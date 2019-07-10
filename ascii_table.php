@@ -253,6 +253,25 @@ class Ascii_Table
     }
 
     /**
+     * This function is wrapper for str_pad but with multibyte strings support
+     *
+     * @input string $input The input string.
+     * @pad_length int @pad_length The padded string length.
+     * @pad_style string @pad_style Can be STR_PAD_RIGHT or STR_PAD_LEFT.
+     *
+     * @return string Return the padded string
+     */
+    private static function pad($input, $pad_length, $pad_style)
+    {
+        if (extension_loaded('mbstring')) {
+            return str_pad($input, strlen($input) - mb_strlen($input) + $pad_length, ' ', $pad_style);
+        }
+        else {
+            return str_pad($input, $pad_length, ' ', $pad_style);
+        }
+    }
+
+    /**
      * This method will set the $col_width variable with the longest value in each column.
      *
      * @param array $array The multi-dimensional array you are building the ASCII Table from.
@@ -393,7 +412,7 @@ class Ascii_Table
         foreach ($this->col_widths as $col => $length) {
             // Add title
             $alignment = $autoalign_cells && isset($this->col_types[$col]) && $this->col_types[$col] == 'numeric' ? STR_PAD_LEFT : STR_PAD_RIGHT;
-            $row .= ' ' . str_pad($col, $this->col_widths[$col], ' ', $alignment) . ' ';
+            $row .= ' ' . $this->pad($col, $this->col_widths[$col], $alignment) . ' ';
 
             // Add the right hand bar
             $row .= '|';
@@ -425,7 +444,7 @@ class Ascii_Table
             foreach ($data as $col => $value) {
                 // Add the value to the table
                 $alignment = $autoalign_cells && isset($this->col_types[$col]) && $this->col_types[$col] == 'numeric' ? STR_PAD_LEFT : STR_PAD_RIGHT;
-                $rows .= ' ' . str_pad($value, $this->col_widths[$col], ' ', $alignment) . ' ';
+                $rows .= ' ' . $this->pad($value, $this->col_widths[$col], $alignment) . ' ';
 
                 // Add the right hand bar
                 $rows .= '|';
