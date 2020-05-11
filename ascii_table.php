@@ -1,4 +1,6 @@
 <?php
+namespace Ascii_Table;
+
 /**
  * PHP ASCII Tables
  *

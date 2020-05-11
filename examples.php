@@ -1,6 +1,7 @@
 <?php
-require_once('./ascii_table.php');
-$ascii_table = new ascii_table();
+require_once 'vendor/autoload.php';
+
+$ascii_table = new Ascii_Table\Ascii_Table();
 // Colors Example Data
 $svg_colors = array(
    array(
